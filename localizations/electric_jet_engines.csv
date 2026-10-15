@@ -6,7 +6,7 @@ Feature/ElectricJetEngines/Whittle/Description,Text,Feature description,Runs the
 Feature/ElectricJetEngines/Goliath/Name,Text,Feature name,Electric Goliath
 Feature/ElectricJetEngines/Goliath/Description,Text,Feature description,Runs the Goliath turbofan on Electric Charge instead of fuel.
 Feature/ElectricJetEngines/TechTree/Name,Text,Feature name,Electric Engines Tech Tree
-Feature/ElectricJetEngines/TechTree/Description,Text,Adds electric aviation to the tech tree rather than making it always unlocked.
+Feature/ElectricJetEngines/TechTree/Description,Text,,Adds electric aviation to the tech tree rather than making it always unlocked.
 ElectricJetEngines/TechNodes/Names/tNode_1v_electric_aviation_01,Text,,Electric Aviation
 ElectricJetEngines/TechNodes/Descriptions/tNode_1v_electric_aviation_01,Text,,Electrifies your jet engine - how does this work? Kerbal Sorcery
 ElectricJetEngines/TechNodes/Names/tNode_2v_electric_aviation_02,Text,Text,,Mk2 Electric Aviation
