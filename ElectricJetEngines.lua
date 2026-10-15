@@ -38,8 +38,12 @@ local function electrifyEngine(part)
         data.ActiveVariants = { "standard" }
         data.DefaultActiveVariants = { "standard" }
         data:EnsureVariantSet("propulsion", function(set)
-            set:EnsureVariant("standard", function(variant) end)
+            set.VariantSetLocalizationKey = "ElectricEngines/Variants/Propulsion"
+            set:EnsureVariant("standard", function(variant)
+                variant.VariantLocalizationKey = "ElectricEngines/Variants/Propulsion/Standard"
+            end)
             set:EnsureVariant("electric", function(variant)
+                variant.VariantLocalizationKey = "ElectricEngines/Variants/Propulsion/Electric"
                 variant:EnsureTransformer("EngineModeSwapper", function(swapper)
                     for _, mode in pairs(modes) do
                         swapper:Append(mode)
@@ -59,21 +63,21 @@ end
 PM.Parts:Patch("ElectricWheesley")
     :Feature("Wheesley")
     :Named("engine_1v_turbofan_methane_wheesley")
-    :Do(function(part) electrifyEngine(part) end)
+    :Do(electrifyEngine)
 
 PM.Parts:Patch("ElectricWhittle")
     :Feature("Whittle")
     :Named("engine_0v_methane_whittle")
-    :Do(function(part) electrifyEngine(part) end)
+    :Do(electrifyEngine)
 
 PM.Parts:Patch("ElectricGoliath")
     :Feature("Goliath")
     :Named("engine_2v_turbofan_methane_goliath")
-    :Do(function(part) electrifyEngine(part) end)
+    :Do(electrifyEngine(part))
 
 -- ── Tech tree rebalance ───────────────────────────────────────────────────
 
-local function electricAviationNode(id, x, cost, prerequisite, engine)
+local function electricAviationNode(id, x, cost, prerequisite, engine, feature)
     PM.Science:NewTechNode(id, function(node)
         node.NameLocKey = "ElectricEngines/TechNodes/Names/" .. id
         node.DescriptionLocKey = "ElectricEngines/TechNodes/Descriptions/" .. id
@@ -83,9 +87,9 @@ local function electricAviationNode(id, x, cost, prerequisite, engine)
         node.TechTreePosition.x = x
         node.TechTreePosition.y = 90
         node.UnlockedVariants:Append({ PartName = engine, VariantSetId = "propulsion", VariantId = "electric" })
-    end):Feature("TechTree")
+    end):Feature("TechTree"):Feature(feature)
 end
 
-electricAviationNode("tNode_1v_electric_aviation_01", 1080, 100, "tNode_1v_aero_02", "engine_1v_turbofan_methane_wheesley")
-electricAviationNode("tNode_2v_electric_aviation_02", 2520, 600, "tNode_2v_aero_03", "engine_1v_turbofan_methane_panther")
-electricAviationNode("tNode_3v_electric_aviation_03", 3960, 4000, "tNode_2v_electric_aviation_02", "engine_2v_turbofan_methane_goliath")
+electricAviationNode("tNode_1v_electric_aviation_01", 1080, 100, "tNode_0v_aero", "engine_0v_methane_whittle","ElectricWhittle")
+electricAviationNode("tNode_2v_electric_aviation_02", 2520, 600, "tNode_2v_aero_03", "engine_1v_turbofan_methane_wheesley","ElectricWheesley")
+electricAviationNode("tNode_3v_electric_aviation_03", 3960, 4000, "tNode_3v_aero_03", "engine_2v_turbofan_methane_goliath","ElectricGoliath")
