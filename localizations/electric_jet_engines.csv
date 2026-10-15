@@ -13,3 +13,6 @@ ElectricJetEngines/TechNodes/Names/tNode_2v_electric_aviation_02,Text,,Mk2 Elect
 ElectricJetEngines/TechNodes/Descriptions/tNode_2v_electric_aviation_02,Text,,Electrifies your larger jet engines - how does this work? Kerbal Sorcery
 ElectricJetEngines/TechNodes/Names/tNode_3v_electric_aviation_03,Text,,Mk3 Electric Aviation
 ElectricJetEngines/TechNodes/Descriptions/tNode_3v_electric_aviation_03,Text,,Electrifies your largest jet engines - how does this work? Kerbal Sorcery
+ElectricEngines/Variants/Propulsion,Text,,Propulsion
+ElectricEngines/Variants/Propulsion/Standard,Text,,Methane
+ElectricEngines/Variants/Propulsion/Electric,Text,,Electric
