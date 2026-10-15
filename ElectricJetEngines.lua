@@ -77,19 +77,33 @@ PM.Parts:Patch("ElectricGoliath")
 
 -- ── Tech tree rebalance ───────────────────────────────────────────────────
 
-local function electricAviationNode(id, x, cost, prerequisite, engine, feature)
+-- Each node needs TechTree on, plus any engine features passed after the engines.
+local function electricAviationNode(id, x, y, cost, prerequisites, engines, ...)
     PM.Science:NewTechNode(id, function(node)
-        node.NameLocKey = "ElectricEngines/TechNodes/Names/" .. id
-        node.DescriptionLocKey = "ElectricEngines/TechNodes/Descriptions/" .. id
+        node.NameLocKey = "ElectricJetEngines/TechNodes/Names/" .. id
+        node.DescriptionLocKey = "ElectricJetEngines/TechNodes/Descriptions/" .. id
         node.IconID = "ICO-RDCenter-Plane-24x"
         node.RequiredSciencePoints = cost
-        node.RequiredTechNodeIDs:Append(prerequisite)
+        for _, prerequisite in ipairs(prerequisites) do
+            node.RequiredTechNodeIDs:Append(prerequisite)
+        end
         node.TechTreePosition.x = x
-        node.TechTreePosition.y = 90
-        node.UnlockedVariants:Append({ PartName = engine, VariantSetId = "propulsion", VariantId = "electric" })
-    end):Feature("TechTree"):Feature(feature)
+        node.TechTreePosition.y = y
+        for _, engine in ipairs(engines) do
+            node.UnlockedVariants:Append({ PartName = engine, VariantSetId = "propulsion", VariantId = "electric" })
+        end
+    end):Feature("TechTree", ...)
 end
 
-electricAviationNode("tNode_1v_electric_aviation_01", 1080, 100, "tNode_0v_aero", "engine_0v_methane_whittle","Whittle")
-electricAviationNode("tNode_2v_electric_aviation_02", 2520, 600, "tNode_2v_aero_03", "engine_1v_turbofan_methane_wheesley","Wheesley")
-electricAviationNode("tNode_3v_electric_aviation_03", 3960, 4000, "tNode_3v_aero_03", "engine_2v_turbofan_methane_goliath","Goliath")
+electricAviationNode("tNode_1v_electric_aviation", 1080, 90, 100,
+    { "tNode_1v_aero_02" },
+    { "engine_1v_turbofan_methane_wheesley" },
+    "Wheesley")
+electricAviationNode("tNode_2v_electric_drones", 2520, -20, 650,
+    { "tNode_0v_aero" },
+    { "engine_0v_methane_whittle" },
+    "Whittle")
+electricAviationNode("tNode_3v_electric_aviation_03", 3960, 90, 4000,
+    { "tNode_3v_aero_03" },
+    { "engine_2v_turbofan_methane_goliath" },
+    "Goliath")
