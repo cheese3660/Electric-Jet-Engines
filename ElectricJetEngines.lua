@@ -73,7 +73,7 @@ PM.Parts:Patch("ElectricWhittle")
 PM.Parts:Patch("ElectricGoliath")
     :Feature("Goliath")
     :Named("engine_2v_turbofan_methane_goliath")
-    :Do(electrifyEngine(part))
+    :Do(electrifyEngine)
 
 -- ── Tech tree rebalance ───────────────────────────────────────────────────
 
@@ -90,6 +90,6 @@ local function electricAviationNode(id, x, cost, prerequisite, engine, feature)
     end):Feature("TechTree"):Feature(feature)
 end
 
-electricAviationNode("tNode_1v_electric_aviation_01", 1080, 100, "tNode_0v_aero", "engine_0v_methane_whittle","ElectricWhittle")
-electricAviationNode("tNode_2v_electric_aviation_02", 2520, 600, "tNode_2v_aero_03", "engine_1v_turbofan_methane_wheesley","ElectricWheesley")
-electricAviationNode("tNode_3v_electric_aviation_03", 3960, 4000, "tNode_3v_aero_03", "engine_2v_turbofan_methane_goliath","ElectricGoliath")
+electricAviationNode("tNode_1v_electric_aviation_01", 1080, 100, "tNode_0v_aero", "engine_0v_methane_whittle","Whittle")
+electricAviationNode("tNode_2v_electric_aviation_02", 2520, 600, "tNode_2v_aero_03", "engine_1v_turbofan_methane_wheesley","Wheesley")
+electricAviationNode("tNode_3v_electric_aviation_03", 3960, 4000, "tNode_3v_aero_03", "engine_2v_turbofan_methane_goliath","Goliath")
