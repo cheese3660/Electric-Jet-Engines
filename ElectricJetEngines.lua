@@ -24,19 +24,33 @@ PM.Resources:NewRecipe("ElectricJetPropellant", function(recipe)
 end)
 
 -- ── Helper: swap propellant on all engine modes, strip fuel containers ────
-
 local function electrifyEngine(part)
+    local modes = {}
     part:PatchModule("Module_Engine", function(module)
         module:PatchData("Data_Engine", function(engine)
             for _, mode in pairs(engine.engineModes) do
-                mode.propellant.mixtureName = "ElectricJetPropellant"
+                modes[#modes + 1] = mode
             end
         end)
     end)
-    part.resourceContainers:RemoveWhere(function(c)
-        return c.name == "MethaneAir"
-            or c.name == "Methane"
-            or c.name == "LiquidFuel"
+
+    PM.VSwift:AddPartSwitch(part, function(data)
+        data.ActiveVariants = { "standard" }
+        data.DefaultActiveVariants = { "standard" }
+        data:EnsureVariantSet("propulsion", function(set)
+            set:EnsureVariant("standard", function(variant) end)
+            set:EnsureVariant("electric", function(variant)
+                variant:EnsureTransformer("EngineModeSwapper", function(swapper)
+                    for _, mode in pairs(modes) do
+                        swapper:Append(mode)
+                        swapper[mode.engineID].propellant.mixtureName = "ElectricJetPropellant"
+                    end
+                end)
+                variant:EnsureTransformer("ResourceContainerRemover", function(remover)
+                    remover.Containers = { "MethaneAir", "Methane", "LiquidFuel" }
+                end)
+            end)
+        end)
     end)
 end
 
@@ -59,44 +73,19 @@ PM.Parts:Patch("ElectricGoliath")
 
 -- ── Tech tree rebalance ───────────────────────────────────────────────────
 
-PM.Science:PatchTechNodes("ElectricEnginesTechTree")
-    :Feature("TechTree")
-    :Do(function(node)
+local function electricAviationNode(id, x, cost, prerequisite, engine)
+    PM.Science:NewTechNode(id, function(node)
+        node.NameLocKey = "ElectricEngines/TechNodes/Names/" .. id
+        node.DescriptionLocKey = "ElectricEngines/TechNodes/Descriptions/" .. id
+        node.IconID = "ICO-RDCenter-Plane-24x"
+        node.RequiredSciencePoints = cost
+        node.RequiredTechNodeIDs:Append(prerequisite)
+        node.TechTreePosition.x = x
+        node.TechTreePosition.y = 90
+        node.UnlockedVariants:Append({ PartName = engine, VariantSetId = "propulsion", VariantId = "electric" })
+    end):Feature("TechTree")
+end
 
-        -- Light Aviation: add Panther + Z-1K battery alongside existing parts
-        if node.ID == "tNode_1v_aero_02" then
-            node.UnlockedPartsIDs:Clear()
-            node.UnlockedPartsIDs:Append("cockpit_1v_m1_crew")
-            node.UnlockedPartsIDs:Append("cockpit_1v_m1_inline_crew")
-            node.UnlockedPartsIDs:Append("fueltank_1v_m1_inline_methane")
-            node.UnlockedPartsIDs:Append("engine_1v_turbofan_methane_wheesley")
-            node.UnlockedPartsIDs:Append("engine_1v_turbofan_methane_panther")
-            node.UnlockedPartsIDs:Append("landinggear_1v")
-            node.UnlockedPartsIDs:Append("landinggear_1v_fixed")
-            node.UnlockedPartsIDs:Append("intake_1v_circular")
-            node.UnlockedPartsIDs:Append("wing_1v_procedural_light")
-            node.UnlockedPartsIDs:Append("stabilizer_2v_procedural_heavy")
-            node.UnlockedPartsIDs:Append("storage_1v_battery_electricity")
-        end
-
-        -- Enlarged Power Systems: remove Z-1K battery
-        if node.ID == "tNode_2v_electronics_01" then
-            node.UnlockedPartsIDs:Clear()
-            node.UnlockedPartsIDs:Append("solararray_2v_accordion")
-            node.UnlockedPartsIDs:Append("fuelcell_0v")
-        end
-
-        -- Mk2 Jets: remove Panther
-        if node.ID == "tNode_2v_aero_01" then
-            node.UnlockedPartsIDs:Clear()
-            node.UnlockedPartsIDs:Append("cockpit_2v_m2_crew")
-            node.UnlockedPartsIDs:Append("cockpit_2v_m2_inline_crew")
-            node.UnlockedPartsIDs:Append("landinggear_2v")
-            node.UnlockedPartsIDs:Append("airbrake_1v")
-            node.UnlockedPartsIDs:Append("intake_1v_m1_nacelle_methane")
-            node.UnlockedPartsIDs:Append("fueltank_2v_m2_inline_methane_1x1")
-            node.UnlockedPartsIDs:Append("fueltank_2v_m2_inline_methane_1x2")
-            node.UnlockedPartsIDs:Append("wing_2v_procedural_heavy")
-        end
-
-    end)
+electricAviationNode("tNode_1v_electric_aviation_01", 1080, 100, "tNode_1v_aero_02", "engine_1v_turbofan_methane_wheesley")
+electricAviationNode("tNode_2v_electric_aviation_02", 2520, 600, "tNode_2v_aero_03", "engine_1v_turbofan_methane_panther")
+electricAviationNode("tNode_3v_electric_aviation_03", 3960, 4000, "tNode_2v_electric_aviation_02", "engine_2v_turbofan_methane_goliath")
